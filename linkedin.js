@@ -1,9 +1,32 @@
 require("chromedriver");
 let swd = require("selenium-webdriver");
 let { username, password } = require("./credentials.json");
-const { Driver } = require("selenium-webdriver/chrome");
+var chrome = require("selenium-webdriver/chrome");
 let browser = new swd.Builder();
-let tab = browser.forBrowser("chrome").build();
+
+/** 
+ * Set chrome command line options/switches
+*/      
+var chromeOptions = new chrome.Options();
+chromeOptions.addArguments("test-type");
+chromeOptions.addArguments("start-maximized");
+chromeOptions.addArguments("--js-flags=--expose-gc");
+chromeOptions.addArguments("--enable-precise-memory-info");
+chromeOptions.addArguments("--disable-popup-blocking");
+chromeOptions.addArguments("--disable-default-apps");
+chromeOptions.addArguments("--disable-infobars");
+chromeOptions.addArguments("--disable-blink-features");
+chromeOptions.addArguments("--disable-blink-features=AutomationControlled");
+chromeOptions.excludeSwitches("enable-automation")
+chromeOptions.addArguments("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36");
+
+
+let tab = new swd.Builder()
+             .forBrowser("chrome")
+             .setChromeOptions(chromeOptions)
+             .build();
+
+
 let tabWillBeOpenedPromise = tab.get(
   "https://www.linkedin.com/login?fromSignIn=true&trk=guest_homepage-basic_nav-header-signin"
 );
@@ -38,7 +61,7 @@ tabWillBeOpenedPromise
     results = results.replace(",", "");
     results = parseInt(results);
     maxPages = Math.ceil(results / 10);
-    for (let i = 16 ;i <= maxPages; i++) {
+    for (let i = 18 ;i <= maxPages; i++) {
       await tab.get(
         'https://www.linkedin.com/search/results/people/?facetNetwork=%5B"F"%5D&keywords=' +
         company +
